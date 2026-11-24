@@ -209,7 +209,7 @@ async function main() {
   check('people list returns mentors only', people.data?.users?.every((row) => row.role === 'senior'))
 
   const stats = await call('/activity/stats')
-  check('stats endpoint returns totals', (stats.data?.totals?.members ?? 0) >= 8)
+  check('stats endpoint returns totals', (stats.data?.totals?.members ?? 0) >= 5)
   check('stats returns 7 days of bars', stats.data?.last7Days?.length === 7)
 
   const activity = await call('/activity?limit=5')

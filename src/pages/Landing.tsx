@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { DOMAIN_META, DOMAINS } from '../types'
+import { api } from '../lib/api'
+import { DOMAIN_META, DOMAINS, type Comment, type Post } from '../types'
 
 const ROOMS = DOMAINS.map((domain) => ({
   domain,
@@ -49,7 +51,38 @@ const EXTRAS = [
   },
 ]
 
+function firstParagraph(body: string): string {
+  return body.split('\n').find((line) => line.trim().length > 0) ?? body
+}
+
 export default function Landing() {
+  const [featured, setFeatured] = useState<{ post: Post; suggestion: Comment | null } | null>(null)
+  const [loaded, setLoaded] = useState(false)
+
+  // The card on the right is the most-liked post in the feed right now, with its real
+  // counts and its first suggestion. Nothing on this page is invented.
+  useEffect(() => {
+    let cancelled = false
+    api<{ posts: Post[] }>('/posts?sort=top&limit=1')
+      .then(async (data) => {
+        const post = data.posts[0]
+        if (!post) return
+        const commentData = await api<{ comments: Comment[] }>(`/posts/${post.id}/comments`)
+        if (!cancelled) setFeatured({ post, suggestion: commentData.comments[0] ?? null })
+      })
+      .catch(() => {
+        /* if the API is down the hero simply shows no example */
+      })
+      .finally(() => {
+        if (!cancelled) setLoaded(true)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const meta = featured ? DOMAIN_META[featured.post.domain] : null
+
   return (
     <div className="min-h-screen">
       <header className="border-b border-ink/15">
@@ -99,33 +132,55 @@ export default function Landing() {
           </div>
 
           <figure className="sheet relative px-5 pb-4 pt-4 sm:px-6">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="font-serif text-[15px] text-ink">Meera Raghavan</p>
-                <p className="text-[11px] text-inksoft">Staff engineer, Razorpay. Mentor, 9 years.</p>
+            {featured && meta ? (
+              <>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate font-serif text-[15px] text-ink">
+                      {featured.post.author?.name}
+                    </p>
+                    <p className="truncate text-[11px] text-inksoft">
+                      {featured.post.author?.headline}
+                    </p>
+                  </div>
+                  <span className={`stamp animate-stamp shrink-0 ${meta.ink}`}>{meta.label}</span>
+                </div>
+
+                <h2 className="mt-3 font-serif text-[1.12rem] leading-[1.3] text-ink">
+                  {featured.post.title}
+                </h2>
+
+                <p className="mt-2 font-serif text-[14.5px] leading-[1.62] text-ink/85">
+                  {firstParagraph(featured.post.body)}
+                </p>
+
+                {featured.suggestion ? (
+                  <p className="animate-pen pen-note mt-3 line-clamp-3 text-right">
+                    {featured.suggestion.body}
+                  </p>
+                ) : null}
+
+                <div className="mt-3 flex items-center gap-4 border-t border-ink/10 pt-2.5 text-[11.5px] text-inksoft">
+                  <span>
+                    {featured.post.likeCount}{' '}
+                    {featured.post.likeCount === 1 ? 'person liked this' : 'people liked this'}
+                  </span>
+                  <span>
+                    {featured.post.commentCount}{' '}
+                    {featured.post.commentCount === 1 ? 'suggestion' : 'suggestions'}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <div className="min-h-[236px] space-y-3" aria-hidden={loaded}>
+                <div className="shimmer h-3 w-32 rounded-[2px]" />
+                <div className="shimmer h-3 w-44 rounded-[2px]" />
+                <div className="shimmer mt-4 h-4 w-4/5 rounded-[2px]" />
+                <div className="shimmer h-3 w-full rounded-[2px]" />
+                <div className="shimmer h-3 w-11/12 rounded-[2px]" />
+                <div className="shimmer h-3 w-2/3 rounded-[2px]" />
               </div>
-              <span className="stamp animate-stamp shrink-0 text-ink-tech">Tech</span>
-            </div>
-
-            <h2 className="mt-3 font-serif text-[1.12rem] leading-[1.3] text-ink">
-              What I look for when I screen a backend resume
-            </h2>
-
-            <p className="mt-2 font-serif text-[14.5px] leading-[1.62] text-ink/85">
-              I have read about six hundred junior resumes. The ones that survive the first twenty
-              seconds do three things. One: <span className="hl">a project described with a number</span>,
-              not a project described with an adjective. Two: a stack list short enough that you can
-              defend every line. Three: nothing about being a team player.
-            </p>
-
-            <p className="animate-pen pen-note mt-3 text-right">
-              the number is the whole trick
-            </p>
-
-            <div className="mt-3 flex items-center gap-4 border-t border-ink/10 pt-2.5 text-[11.5px] text-inksoft">
-              <span>34 liked this</span>
-              <span>12 suggestions</span>
-            </div>
+            )}
           </figure>
         </div>
       </section>
@@ -186,7 +241,7 @@ export default function Landing() {
             Ask your first question tonight.
           </h2>
           <p className="mx-auto mt-2 max-w-sm text-[13.5px] leading-relaxed text-inksoft">
-            Making an account takes thirty seconds. A senior usually answers within a day.
+            Making an account is quick, and your first question can go up the same evening.
           </p>
           <div className="mt-5 flex flex-wrap justify-center gap-3">
             <Link to="/signup" className="btn-primary">

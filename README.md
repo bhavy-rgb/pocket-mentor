@@ -146,7 +146,7 @@ npm run dev
 
 `npm run dev` starts both (Vite proxies `/api` to the Express server).
 
-### Demo accounts — password `demo1234`
+### Five demo accounts, all with the password `demo1234`
 
 | Email | Role | Domain |
 | --- | --- | --- |
@@ -154,12 +154,9 @@ npm run dev
 | `arjun@pocket.dev` | Senior mentor | Finance (CA, ex-EY) |
 | `fatima@pocket.dev` | Senior mentor | Law (Advocate, Bombay HC) |
 | `ravi@pocket.dev` | Senior mentor | News (Business editor) |
-| `priya@pocket.dev` | Senior mentor | Tech (PM, Zomato) |
 | `kabir@pocket.dev` | Junior | Tech (NIT Trichy) |
-| `ananya@pocket.dev` | Junior | Finance (CA finalist) |
-| `ishan@pocket.dev` | Junior | Law (DU) |
 
-The login screen has a **"Use demo mentor account"** button that signs you in as Meera.
+The login screen has a **"Sign in as the demo mentor"** button that signs you in as Meera.
 
 ### Production
 
@@ -200,7 +197,7 @@ pocket-mentor/
 │   ├── index.ts              # app wiring, static client in production
 │   ├── auth.ts               # scrypt hashing + HS256 token signing
 │   ├── store.ts              # atomic JSON-file persistence
-│   ├── seed.ts               # demo members, posts, suggestions, requests, DMs
+│   ├── seed.ts               # five demo people, nine posts, suggestions, requests, DMs
 │   ├── middleware.ts         # requireAuth / optionalAuth
 │   └── routes/               # auth, users, posts, requests, dm, activity
 ├── scripts/{e2e,shots}.mjs   # verification scripts
