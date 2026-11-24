@@ -1,0 +1,482 @@
+@import "tailwindcss";
+
+/* ==================================================================
+   Pocket Mentor — "the senior's notebook"
+   Paper sheets on a cool desk. Navy ink for content, red pen for the
+   margin and for asking, highlighter for the one thing to remember.
+   Depth is letterpress and paper, not plastic.
+   ================================================================== */
+
+@theme {
+  --color-desk: #dde3e9;
+  --color-paper: #fbfaf4;
+  --color-paper2: #f2efe4;
+  --color-ink: #1b2a44;
+  --color-inksoft: #5a6579;
+  --color-rule: #c9d3de;
+  --color-pen: #b23a2c;
+  --color-mark: #f6e27a;
+
+  --color-ink-tech: #2c4a7a;
+  --color-ink-finance: #2f6b4f;
+  --color-ink-law: #5b3f8f;
+  --color-ink-news: #a8382c;
+
+  --font-sans: "Archivo Variable", "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Newsreader Variable", Georgia, "Times New Roman", serif;
+  --font-mono: "Archivo Variable", ui-monospace, monospace;
+}
+
+:root {
+  --paper-edge: #d8d3c4;
+  --paper-shadow: rgba(27, 42, 68, 0.16);
+  --press-top: rgba(255, 255, 255, 0.55);
+  /* paper fibre: filtered noise, not a dot grid */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  --grain-paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23p)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-desk);
+    background-image: var(--grain);
+    background-attachment: fixed;
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-mark);
+    color: #2a2410;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #b9c3ce transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #bcc6d1;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    border-radius: 999px;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-pen);
+    outline-offset: 2px;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    font-family: inherit;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    letter-spacing: -0.011em;
+    line-height: 1.14;
+    color: var(--color-ink);
+  }
+}
+
+@layer components {
+  /* ---------------- the sheet ---------------- */
+  .sheet,
+  .card {
+    position: relative;
+    background-color: var(--color-paper);
+    background-image: var(--grain-paper);
+    border: 1px solid var(--paper-edge);
+    border-radius: 6px;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.95) inset,
+      0 1px 2px rgba(27, 42, 68, 0.06),
+      0 8px 18px -14px var(--paper-shadow);
+  }
+
+  /* index card — people, saved things: a record, so it gets a red header rule */
+  .index-card {
+    position: relative;
+    background-color: var(--color-paper);
+    border: 1px solid var(--paper-edge);
+    border-top: 3px solid var(--color-pen);
+    border-radius: 4px;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.9) inset,
+      0 10px 20px -14px var(--paper-shadow);
+    transition: border-color 200ms ease;
+  }
+
+  .index-card:hover {
+    border-color: #c8c2b1;
+  }
+
+  /* ---------------- the red margin rule ---------------- */
+  .margin-rule {
+    position: relative;
+  }
+
+  .margin-rule::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--margin-rule-x, 52px);
+    width: 1px;
+    background: rgba(178, 58, 44, 0.42);
+  }
+
+  /* ---------------- rubber stamp ---------------- */
+  .stamp {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.09rem 0.4rem 0.13rem;
+    border: 1.5px solid currentColor;
+    border-radius: 2px;
+    font-family: var(--font-sans);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    line-height: 1.5;
+    opacity: 0.9;
+    transform: rotate(-1.6deg);
+    background: color-mix(in srgb, currentColor 7%, transparent);
+  }
+
+  .stamp-flat {
+    transform: none;
+    font-size: 9px;
+    padding: 0.06rem 0.34rem 0.1rem;
+  }
+
+  /* ---------------- letterpress buttons ---------------- */
+  .btn,
+  .btn-primary,
+  .btn-ghost,
+  .btn-pen {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    border-radius: 4px;
+    padding: 0.5rem 0.85rem;
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: 0.005em;
+    text-align: center;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      box-shadow 170ms ease,
+      transform 170ms ease,
+      background-color 170ms ease,
+      color 170ms ease;
+  }
+
+  .btn-primary {
+    color: #fbfaf4;
+    background: linear-gradient(180deg, #2d4266, #1b2a44);
+    border: 1px solid #16233a;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 -2px 0 rgba(0, 0, 0, 0.28),
+      0 1px 2px rgba(27, 42, 68, 0.22);
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(180deg, #354c74, #1f3050);
+  }
+
+  .btn-pen {
+    color: #fdf6f4;
+    background: linear-gradient(180deg, #c04534, #9e3225);
+    border: 1px solid #8a2b1f;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      inset 0 -2px 0 rgba(0, 0, 0, 0.26),
+      0 1px 2px rgba(138, 43, 31, 0.24);
+  }
+
+  .btn-pen:hover {
+    background: linear-gradient(180deg, #c8503f, #a83729);
+  }
+
+  .btn-ghost {
+    color: var(--color-ink);
+    background: linear-gradient(180deg, #fffefa, #f4f1e6);
+    border: 1px solid #cfc9b9;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      inset 0 -2px 0 rgba(27, 42, 68, 0.07),
+      0 1px 2px rgba(27, 42, 68, 0.08);
+  }
+
+  .btn-ghost:hover {
+    background: linear-gradient(180deg, #ffffff, #f8f5eb);
+  }
+
+  .btn:active,
+  .btn-primary:active,
+  .btn-ghost:active,
+  .btn-pen:active {
+    transform: translateY(1px);
+    box-shadow:
+      inset 0 2px 5px rgba(0, 0, 0, 0.3),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.25);
+  }
+
+  .btn:disabled,
+  .btn-primary:disabled,
+  .btn-ghost:disabled,
+  .btn-pen:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .btn-quiet {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 3px;
+    padding: 0.3rem 0.45rem;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-inksoft);
+    cursor: pointer;
+    transition:
+      color 160ms ease,
+      background-color 160ms ease;
+  }
+
+  .btn-quiet:hover {
+    color: var(--color-ink);
+    background: rgba(27, 42, 68, 0.055);
+  }
+
+  /* ---------------- fields ---------------- */
+  .input {
+    width: 100%;
+    border: 1px solid #cfc9b9;
+    border-radius: 3px;
+    padding: 0.55rem 0.7rem;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    color: var(--color-ink);
+    background-color: #fffefa;
+    box-shadow:
+      inset 0 1px 2px rgba(27, 42, 68, 0.1),
+      0 1px 0 rgba(255, 255, 255, 0.9);
+    outline: none;
+    transition:
+      border-color 160ms ease,
+      box-shadow 160ms ease;
+  }
+
+  .input::placeholder {
+    color: #9aa2ad;
+  }
+
+  .input:focus {
+    border-color: rgba(178, 58, 44, 0.5);
+    box-shadow:
+      inset 0 1px 2px rgba(27, 42, 68, 0.08),
+      0 0 0 3px rgba(178, 58, 44, 0.12);
+  }
+
+  /* writing on ruled paper */
+  .ruled {
+    background-image: repeating-linear-gradient(
+      180deg,
+      transparent 0,
+      transparent 27px,
+      rgba(201, 211, 222, 0.85) 27px,
+      rgba(201, 211, 222, 0.85) 28px
+    );
+    line-height: 28px;
+    background-attachment: local;
+  }
+
+  .label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-inksoft);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .link {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: rgba(178, 58, 44, 0.45);
+    text-underline-offset: 3px;
+  }
+
+  .link:hover {
+    text-decoration-color: var(--color-pen);
+    color: var(--color-pen);
+  }
+
+  /* highlighter swipe — one per page, never as decoration */
+  .hl {
+    background: linear-gradient(
+      180deg,
+      transparent 8%,
+      rgba(246, 226, 122, 0.85) 8%,
+      rgba(246, 226, 122, 0.85) 92%,
+      transparent 92%
+    );
+    padding: 0 0.06em;
+  }
+
+  /* the red pen note in the margin */
+  .pen-note {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 0.9rem;
+    line-height: 1.35;
+    color: var(--color-pen);
+  }
+
+  .hairline {
+    height: 1px;
+    background: rgba(27, 42, 68, 0.13);
+  }
+
+  .tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    border: 1px solid transparent;
+    border-radius: 3px 3px 0 0;
+    padding: 0.3rem 0.6rem;
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--color-inksoft);
+    cursor: pointer;
+    transition:
+      color 160ms ease,
+      background-color 160ms ease,
+      border-color 160ms ease;
+  }
+
+  .tab:hover {
+    color: var(--color-ink);
+    background: rgba(27, 42, 68, 0.04);
+  }
+
+  .tab[aria-current="true"],
+  .tab.is-on {
+    color: var(--color-ink);
+    background: var(--color-paper);
+    border-color: var(--paper-edge);
+    border-bottom-color: var(--color-paper);
+    box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.9) inset;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .measure {
+    max-width: 64ch;
+  }
+
+  @keyframes pen-write {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  .animate-pen {
+    animation: pen-write 1100ms cubic-bezier(0.22, 0.61, 0.36, 1) 260ms both;
+  }
+
+  @keyframes stamp-down {
+    0% {
+      opacity: 0;
+      transform: rotate(-1.6deg) scale(1.18);
+    }
+    70% {
+      opacity: 0.95;
+      transform: rotate(-1.6deg) scale(0.98);
+    }
+    100% {
+      opacity: 0.9;
+      transform: rotate(-1.6deg) scale(1);
+    }
+  }
+
+  .animate-stamp {
+    animation: stamp-down 420ms cubic-bezier(0.3, 0.8, 0.4, 1) 1200ms both;
+  }
+
+  .shimmer {
+    background: linear-gradient(90deg, #f2efe4 25%, #fbfaf4 50%, #f2efe4 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s linear infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
