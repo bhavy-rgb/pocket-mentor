@@ -241,6 +241,26 @@ All authenticated routes take `Authorization: Bearer <token>`.
 
 ---
 
+## Deploy
+
+This is a long-running Node server that writes to a file, so it needs a host that runs a container.
+Vercel does not fit: its filesystem is read-only and ephemeral, and it has no place to run the
+Express server.
+
+**Render, one click.** Push this repo, then in Render choose New → Blueprint → pick the repo → Apply.
+`render.yaml` handles the rest: a Docker build, a generated `PM_SECRET`, and a health check on
+`/api/health`.
+
+**Anywhere with Docker.**
+
+```bash
+docker build -t pocket-mentor .
+docker run -p 4000:4000 -e PM_SECRET=$(openssl rand -hex 32) pocket-mentor
+```
+
+On the free plan the disk is ephemeral, so the dataset reseeds on every deploy or restart and posts
+made in the demo disappear. Attach a disk and set `PM_DATA_DIR=/data` to keep them.
+
 ## Configuration
 
 | Variable | Default | Meaning |

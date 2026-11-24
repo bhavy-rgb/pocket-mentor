@@ -1,0 +1,20 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# Push this file, then in Render: New → Blueprint → pick this repo → Apply.
+services:
+  - type: web
+    name: pocket-mentor
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Render generates a long random secret, so the token signing key is
+      # never the fallback string that sits in the source.
+      - key: PM_SECRET
+        generateValue: true
+      # Uncomment after attaching a disk (paid plans) to keep data across deploys.
+      # - key: PM_DATA_DIR
+      #   value: /data
