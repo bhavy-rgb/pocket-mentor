@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Typecheck, build and API tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      # A throwaway secret for the run only. Real deployments set their own.
+      PM_SECRET: ci-run-only-secret-not-used-anywhere-real
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck client and server
+        run: npm run typecheck
+
+      - name: Build client and server
+        run: npm run build
+
+      - name: Start the API and run the end-to-end checks
+        run: |
+          node dist/server/index.js > /tmp/api.log 2>&1 &
+          API_PID=$!
+          for attempt in $(seq 1 30); do
+            if curl -sf http://localhost:4000/api/health > /dev/null; then
+              echo "API answered after ${attempt}s"
+              break
+            fi
+            sleep 1
+          done
+          if ! node scripts/e2e.mjs; then
+            echo "--- API log ---"
+            cat /tmp/api.log
+            kill "$API_PID" || true
+            exit 1
+          fi
+          kill "$API_PID" || true
